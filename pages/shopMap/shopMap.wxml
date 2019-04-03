@@ -1,0 +1,107 @@
+<!--pages/shopMap/shopMap.wxml-->
+<!--绑定点击事件-->
+<!--绑定输入事件-->
+<view wx:if="{{addListShow}}">
+<view class="top">
+  <view class="back iconfont icon-fanhui" bindtap="back1"></view>
+  <view class="search-box {{addListShow?'search-box1':''}}">
+    <view class="region" bindtap="chooseCity">{{currentRegion.district}}</view>
+    <view class="shu"></view>
+    <input bindinput="getsuggest" placeholder="请输入您的店铺地址"></input>
+  </view>
+</view>
+<!--关键词输入提示列表渲染-->
+<view class="add-list-box">
+<scroll-view class="add-list" scroll-y>
+  <view class="add-item" wx:for="{{suggestion}}" wx:key="index">
+    <!--绑定回填事件-->
+    <view bindtap="backfill" id="{{index}}" data-name="{{item.title}}">
+      <!--根据需求渲染相应数据-->
+      <!--渲染地址title-->
+      <view class="title">{{item.title}}</view>
+      <!--渲染详细地址-->
+      <view class="add">{{item.addr}}</view>
+    </view>
+  </view>
+</scroll-view>
+</view>
+</view>
+
+
+<view wx:if="{{!addListShow && !chooseCity}}">
+<!--地图容器-->
+<map id="myMap"
+   style="width:100%;height:300px;"
+   longitude="{{longitude}}"
+   latitude="{{latitude}}" scale="17" bindregionchange="mapChange">
+   <cover-view class="top">
+      <cover-view class="back" bindtap="back1">
+        <cover-image src="../../images/back.png"></cover-image>
+      </cover-view>
+      <cover-view class="search-box">
+        <cover-view class="region" bindtap="chooseCity">{{currentRegion.district}}</cover-view>
+        <cover-view class="shu"></cover-view>
+        <cover-view class="placeholder" bindtap="showAddList">请输入您的店铺地址</cover-view>
+      </cover-view>
+   </cover-view>
+   <cover-view class="map-prompt">您可拖动地图, 标记店铺准确位置</cover-view>
+   <cover-image class="current-site-icon" src="../../images/my_marker.png"></cover-image>
+   <cover-view class="reload" bindtap="reload">
+      <cover-view class="center1">
+        <cover-view class="center2"></cover-view>
+      </cover-view>
+   </cover-view>
+</map>
+
+<scroll-view class="near-list" scroll-y>
+  <!--绑定回填事件-->
+  <view class="near-item" wx:for="{{nearList}}" wx:key="index">
+    <view class="current-site iconfont icon-location" wx:if="{{index == selectedId }}"></view>
+    <!--根据需求渲染相应数据-->
+    <view bindtap="chooseCenter" id="{{index}}" data-name="{{item.title}}">
+      <!--渲染地址title-->
+      <view class="title {{ index == selectedId?'title1':'' }}">{{item.title}}</view>
+      <!--渲染详细地址-->
+      <view class="add {{ index == selectedId?'add1':'' }}">{{item.addr}}</view>
+    </view>
+  </view>
+</scroll-view>
+<view class="bottom-box">
+  <button bindtap="selectedOk">确认地址</button>
+</view>
+</view>
+
+<view class="region-box" wx:if="{{chooseCity}}">
+  <view class="region-top">
+    <view class="region-back iconfont icon-fanhui" bindtap="back2"></view>
+    <view class="title">选择城市</view>
+  </view>
+  <view class="region-tabs">
+    <text class="tab" bindtap="showProvince">{{currentProvince}}</text>
+    <text class="tab" bindtap="showCity" wx:if="{{!regionShow.province}}" bindtap="showCity">{{currentCity}}</text>
+    <text class="tab" bindtap="showDistrict" wx:if="{{regionShow.district}}" bindtap="showDistrict">{{currentDistrict}}</text>
+  </view>
+  <scroll-view scroll-y style="height:1050rpx;">
+    <view class="region-list" wx:if="{{regionShow.province}}">
+      <view class="region-item" wx:for="{{regionData.province}}" wx:key="index">
+        <view data-id="{{item.id}}" data-name="{{item.fullname}}" bindtap="selectProvince">
+          <text>{{item.fullname}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="region-list" wx:if="{{regionShow.city}}">
+      <view class="region-item" wx:for="{{regionData.city}}" wx:key="index">
+        <view data-id="{{item.id}}" data-name="{{item.fullname}}" bindtap="selectCity">
+          <text>{{item.fullname}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="region-list" wx:if="{{regionShow.district}}">
+      <view class="region-item" wx:for="{{regionData.district}}" wx:key="index">
+        <view data-id="{{item.id}}" data-name="{{item.fullname}}" data-latitude="{{item.location.lat}}" data-longitude="{{item.location.lng}}" bindtap="selectDistrict">
+          <text>{{item.fullname}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
